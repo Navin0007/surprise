@@ -297,6 +297,23 @@ class MotionPagesManager {
     }
 
     /**
+     * Create floating decorative elements
+     */
+    createFloatingDecorations(container) {
+        const emojis = ['💕', '💖', '💗', '💝', '💓', '✨', '⭐', '🌟'];
+        
+        for (let i = 0; i < 8; i++) {
+            const decoration = Utils.createElement('div', 'floating-decoration');
+            decoration.textContent = Utils.randomChoice(emojis);
+            decoration.style.left = `${Utils.random(0, 100)}%`;
+            decoration.style.top = `${Utils.random(0, 100)}%`;
+            decoration.style.animationDelay = `${Utils.random(0, 3)}s`;
+            decoration.style.animationDuration = `${Utils.random(3, 6)}s`;
+            container.appendChild(decoration);
+        }
+    }
+
+    /**
      * Create a motion page with image and lyrics
      */
     createMotionPage(imagePath, lyricText, index) {
@@ -304,6 +321,9 @@ class MotionPagesManager {
         if (index === 0) {
             page.classList.add('active');
         }
+
+        // Add floating decorations
+        this.createFloatingDecorations(page);
 
         // Image container
         const imageContainer = Utils.createElement('div', 'motion-page-image-container');
@@ -320,6 +340,15 @@ class MotionPagesManager {
         // Lyrics container
         const lyricsContainer = Utils.createElement('div', 'motion-page-lyrics');
         lyricsContainer.textContent = lyricText;
+
+        // Add floating hearts
+        const heartLeft = Utils.createElement('div', 'lyrics-heart left');
+        heartLeft.textContent = '💕';
+        const heartRight = Utils.createElement('div', 'lyrics-heart right');
+        heartRight.textContent = '💖';
+        
+        lyricsContainer.appendChild(heartLeft);
+        lyricsContainer.appendChild(heartRight);
 
         page.appendChild(imageContainer);
         page.appendChild(lyricsContainer);
