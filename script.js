@@ -214,19 +214,21 @@ class NoButtonController {
     }
 }
 
-// ===== PHOTO GALLERY MANAGER =====
-class PhotoGalleryManager {
+// ===== MOTION PAGES MANAGER =====
+class MotionPagesManager {
     constructor(containerSelector) {
         this.container = document.querySelector(containerSelector);
+        this.currentPage = 0;
+        this.pages = [];
+        this.lyrics = [];
         this.images = [];
-        this.loadedImages = [];
+        this.autoPlayInterval = null;
     }
 
     /**
      * Get all image files from media folder
      */
     async getImageFiles() {
-        // List of JPG image files in media folder (converted from HEIC)
         const imageFiles = [
             'media/IMG_0419.jpg',
             'media/IMG_1413.jpg',
@@ -265,8 +267,21 @@ class PhotoGalleryManager {
             'media/IMG_5397.jpg',
             'media/IMG_5404.jpg'
         ];
-
         return imageFiles;
+    }
+
+    /**
+     * Load lyrics from JSON file
+     */
+    async loadLyrics() {
+        try {
+            const response = await fetch('lyrics.json');
+            const data = await response.json();
+            return data.verses || [];
+        } catch (error) {
+            console.error('Error loading lyrics:', error);
+            return [];
+        }
     }
 
     /**
@@ -282,48 +297,131 @@ class PhotoGalleryManager {
     }
 
     /**
-     * Load and display random images
+     * Create a motion page with image and lyrics
      */
-    async loadRandomImages(count = 6) {
+    createMotionPage(imagePath, lyricText, index) {
+        const page = Utils.createElement('div', 'motion-page');
+        if (index === 0) {
+            page.classList.add('active');
+        }
+
+        // Image container
+        const imageContainer = Utils.createElement('div', 'motion-page-image-container');
+        const img = Utils.createElement('img', 'motion-page-image', {
+            src: imagePath,
+            alt: `Memory ${index + 1}`,
+            loading: 'lazy'
+        });
+        const gradient = Utils.createElement('div', 'motion-page-gradient');
+
+        imageContainer.appendChild(img);
+        imageContainer.appendChild(gradient);
+
+        // Lyrics container
+        const lyricsContainer = Utils.createElement('div', 'motion-page-lyrics');
+        lyricsContainer.textContent = lyricText;
+
+        page.appendChild(imageContainer);
+        page.appendChild(lyricsContainer);
+
+        return page;
+    }
+
+    /**
+     * Load and display motion pages with images and lyrics
+     */
+    async loadMotionPages() {
         if (!this.container) return;
 
-        // Clear existing images
+        // Clear container
         this.container.innerHTML = '';
 
-        // Get all image files
+        // Load lyrics and images
+        this.lyrics = await this.loadLyrics();
         const allImages = await this.getImageFiles();
-        
-        // Shuffle and select random images
-        const shuffled = this.shuffleArray(allImages);
-        const selectedImages = shuffled.slice(0, Math.min(count, shuffled.length));
+        const shuffledImages = this.shuffleArray(allImages);
 
-        // Create photo frames for each image
-        selectedImages.forEach((imagePath, index) => {
-            const frame = Utils.createElement('div', 'photo-frame');
+        // Create pages - pair each lyric with a random image
+        const numPages = Math.min(this.lyrics.length, 5); // Use up to 5 verses
+        this.pages = [];
+
+        for (let i = 0; i < numPages; i++) {
+            const lyric = this.lyrics[i];
+            const image = shuffledImages[i % shuffledImages.length];
             
-            const img = Utils.createElement('img', '', {
-                src: imagePath,
-                alt: `Memory ${index + 1}`,
-                loading: 'lazy'
-            });
+            const page = this.createMotionPage(image, lyric.text, i);
+            this.container.appendChild(page);
+            this.pages.push(page);
+        }
 
-            // Handle image load error (for HEIC files that might not load)
-            img.onerror = () => {
-                // Try to load a placeholder or skip this image
-                frame.style.display = 'none';
-            };
+        // Update page indicator
+        const totalPagesEl = document.querySelector('#total-pages');
+        if (totalPagesEl) {
+            totalPagesEl.textContent = numPages;
+        }
 
-            const gradient = Utils.createElement('div', 'photo-gradient');
+        // Start auto-play
+        this.startAutoPlay();
+    }
 
-            frame.appendChild(img);
-            frame.appendChild(gradient);
-            this.container.appendChild(frame);
+    /**
+     * Show specific page
+     */
+    showPage(index) {
+        if (index < 0 || index >= this.pages.length) return;
 
-            // Animate in with delay
-            setTimeout(() => {
-                frame.classList.add('visible');
-            }, index * 200);
+        // Update current page
+        const prevIndex = this.currentPage;
+        this.currentPage = index;
+
+        // Update page classes
+        this.pages.forEach((page, i) => {
+            page.classList.remove('active', 'prev');
+            if (i === index) {
+                page.classList.add('active');
+            } else if (i < index) {
+                page.classList.add('prev');
+            }
         });
+
+        // Update page indicator
+        const currentPageEl = document.querySelector('#current-page');
+        if (currentPageEl) {
+            currentPageEl.textContent = index + 1;
+        }
+    }
+
+    /**
+     * Go to next page
+     */
+    nextPage() {
+        const nextIndex = (this.currentPage + 1) % this.pages.length;
+        this.showPage(nextIndex);
+    }
+
+    /**
+     * Start auto-play
+     */
+    startAutoPlay() {
+        // Clear existing interval
+        if (this.autoPlayInterval) {
+            clearInterval(this.autoPlayInterval);
+        }
+
+        // Auto-advance every 5 seconds
+        this.autoPlayInterval = setInterval(() => {
+            this.nextPage();
+        }, 5000);
+    }
+
+    /**
+     * Stop auto-play
+     */
+    stopAutoPlay() {
+        if (this.autoPlayInterval) {
+            clearInterval(this.autoPlayInterval);
+            this.autoPlayInterval = null;
+        }
     }
 }
 
@@ -359,7 +457,7 @@ class ValentineApp {
             '.container',
             CONFIG.noButton
         );
-        this.photoGallery = new PhotoGalleryManager('#photo-gallery');
+        this.motionPages = new MotionPagesManager('#motion-pages-container');
         
         this.init();
     }
@@ -393,8 +491,8 @@ class ValentineApp {
         // Create confetti
         this.confettiManager.create();
 
-        // Load random photos in gallery
-        this.photoGallery.loadRandomImages(6);
+        // Load motion pages with images and lyrics
+        this.motionPages.loadMotionPages();
 
         // Optional: Play success sound (uncomment if you add audio file)
         // this.playSound('celebration.mp3');
