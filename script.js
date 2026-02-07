@@ -372,15 +372,20 @@ class MotionPagesManager {
         this.allCollageImages = allImages;
         this.collageContainer = collageContainer;
 
-        // Create scrolling lyrics container
-        const lyricsWrapper = Utils.createElement('div', 'lyrics-scroll-wrapper');
+        // Create static lyrics container showing one verse at a time
+        const lyricsWrapper = Utils.createElement('div', 'lyrics-static-wrapper');
+        const lyricsContainer = Utils.createElement('div', 'lyrics-static');
         
-        // Create multiple duplicates for seamless continuous loop
-        for (let i = 0; i < 3; i++) {
-            const lyricsContainer = Utils.createElement('div', 'lyrics-scroll');
-            lyricsContainer.textContent = lyricText;
-            lyricsWrapper.appendChild(lyricsContainer);
-        }
+        // Split lyrics by verse separator and show first verse
+        const verses = lyricText.split('  💕  •  💕  ');
+        this.currentVerseIndex = 0;
+        this.allVerses = verses;
+        
+        lyricsContainer.textContent = verses[0] || verses.join('\n\n');
+        lyricsWrapper.appendChild(lyricsContainer);
+        
+        // Rotate verses every 8 seconds
+        this.startVerseRotation(lyricsContainer);
 
         page.appendChild(collageContainer);
         page.appendChild(lyricsWrapper);
@@ -430,6 +435,30 @@ class MotionPagesManager {
                 item.rotationInterval = rotationInterval;
             }, index * 500); // Stagger initial start
         });
+    }
+
+    /**
+     * Rotate verses in lyrics display
+     */
+    startVerseRotation(lyricsContainer) {
+        if (!this.allVerses || this.allVerses.length <= 1) return;
+
+        const manager = this;
+        setInterval(() => {
+            manager.currentVerseIndex = (manager.currentVerseIndex + 1) % manager.allVerses.length;
+            
+            // Fade out
+            lyricsContainer.style.opacity = '0';
+            lyricsContainer.style.transition = 'opacity 0.8s ease';
+            
+            setTimeout(() => {
+                // Change verse
+                lyricsContainer.textContent = manager.allVerses[manager.currentVerseIndex];
+                
+                // Fade in
+                lyricsContainer.style.opacity = '1';
+            }, 800);
+        }, 8000); // Change verse every 8 seconds
     }
 
     /**
@@ -494,7 +523,7 @@ class MotionPagesManager {
         this.pages = [];
 
         // Use all available images for dynamic rotation
-        // Combine all lyrics into one scrolling text with proper formatting
+        // Combine all lyrics with separators for verse rotation
         const allLyrics = this.lyrics.slice(0, numPages)
             .map(lyric => lyric.text)
             .join('  💕  •  💕  ');
