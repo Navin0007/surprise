@@ -251,6 +251,125 @@ p {
     transform: scale(0.95);
 }
 
+/* ===== PHOTO GALLERY ===== */
+.photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+    padding: 20px;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.photo-frame {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: frameFlow 8s ease-in-out infinite;
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+}
+
+.photo-frame.visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    animation: frameFlow 8s ease-in-out infinite, framePulse 3s ease-in-out infinite;
+}
+
+@keyframes frameFlow {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-10px) rotate(1deg);
+    }
+    50% {
+        transform: translateY(0) rotate(0deg);
+    }
+    75% {
+        transform: translateY(10px) rotate(-1deg);
+    }
+}
+
+@keyframes framePulse {
+    0%, 100% {
+        box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3);
+    }
+    50% {
+        box-shadow: 0 15px 40px rgba(255, 105, 180, 0.6);
+    }
+}
+
+.photo-frame img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.photo-frame:hover img {
+    transform: scale(1.1);
+}
+
+.photo-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 105, 180, 0.3) 0%,
+        rgba(255, 182, 193, 0.2) 25%,
+        rgba(255, 192, 203, 0.1) 50%,
+        rgba(255, 20, 147, 0.3) 75%,
+        rgba(255, 105, 180, 0.4) 100%
+    );
+    background-size: 200% 200%;
+    animation: gradientMove 5s ease infinite;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.photo-frame:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.photo-frame:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.photo-frame:nth-child(3) {
+    animation-delay: 1s;
+}
+
+.photo-frame:nth-child(4) {
+    animation-delay: 1.5s;
+}
+
+.photo-frame:nth-child(5) {
+    animation-delay: 2s;
+}
+
+.photo-frame:nth-child(6) {
+    animation-delay: 2.5s;
+}
+
 /* ===== GIF CONTAINER ===== */
 .gif-container {
     margin: 30px 0;
@@ -317,6 +436,16 @@ p {
     .btn {
         padding: 12px 30px;
         font-size: 1.1em;
+    }
+
+    .photo-gallery {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .photo-frame img {
+        height: 200px;
     }
 }
 

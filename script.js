@@ -214,6 +214,119 @@ class NoButtonController {
     }
 }
 
+// ===== PHOTO GALLERY MANAGER =====
+class PhotoGalleryManager {
+    constructor(containerSelector) {
+        this.container = document.querySelector(containerSelector);
+        this.images = [];
+        this.loadedImages = [];
+    }
+
+    /**
+     * Get all image files from media folder
+     */
+    async getImageFiles() {
+        // List of JPG image files in media folder (converted from HEIC)
+        const imageFiles = [
+            'media/IMG_0419.jpg',
+            'media/IMG_1413.jpg',
+            'media/IMG_1486.jpg',
+            'media/IMG_1711.jpg',
+            'media/IMG_1787.jpg',
+            'media/IMG_3664.jpg',
+            'media/IMG_3723.jpg',
+            'media/IMG_3723 2.jpg',
+            'media/IMG_3861.jpg',
+            'media/IMG_3906.jpg',
+            'media/IMG_3909.jpg',
+            'media/IMG_4012.jpg',
+            'media/IMG_4668.jpg',
+            'media/IMG_4673.jpg',
+            'media/IMG_4687.jpg',
+            'media/IMG_4692.jpg',
+            'media/IMG_4735.jpg',
+            'media/IMG_4825.jpg',
+            'media/IMG_4828.jpg',
+            'media/IMG_4832.jpg',
+            'media/IMG_4975.jpg',
+            'media/IMG_4983.jpg',
+            'media/IMG_5055.jpg',
+            'media/IMG_5339.jpg',
+            'media/IMG_5340.jpg',
+            'media/IMG_5347.jpg',
+            'media/IMG_5349.jpg',
+            'media/IMG_5351.jpg',
+            'media/IMG_5363.jpg',
+            'media/IMG_5366.jpg',
+            'media/IMG_5369.jpg',
+            'media/IMG_5378.jpg',
+            'media/IMG_5383.jpg',
+            'media/IMG_5385.jpg',
+            'media/IMG_5397.jpg',
+            'media/IMG_5404.jpg'
+        ];
+
+        return imageFiles;
+    }
+
+    /**
+     * Shuffle array randomly
+     */
+    shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+    /**
+     * Load and display random images
+     */
+    async loadRandomImages(count = 6) {
+        if (!this.container) return;
+
+        // Clear existing images
+        this.container.innerHTML = '';
+
+        // Get all image files
+        const allImages = await this.getImageFiles();
+        
+        // Shuffle and select random images
+        const shuffled = this.shuffleArray(allImages);
+        const selectedImages = shuffled.slice(0, Math.min(count, shuffled.length));
+
+        // Create photo frames for each image
+        selectedImages.forEach((imagePath, index) => {
+            const frame = Utils.createElement('div', 'photo-frame');
+            
+            const img = Utils.createElement('img', '', {
+                src: imagePath,
+                alt: `Memory ${index + 1}`,
+                loading: 'lazy'
+            });
+
+            // Handle image load error (for HEIC files that might not load)
+            img.onerror = () => {
+                // Try to load a placeholder or skip this image
+                frame.style.display = 'none';
+            };
+
+            const gradient = Utils.createElement('div', 'photo-gradient');
+
+            frame.appendChild(img);
+            frame.appendChild(gradient);
+            this.container.appendChild(frame);
+
+            // Animate in with delay
+            setTimeout(() => {
+                frame.classList.add('visible');
+            }, index * 200);
+        });
+    }
+}
+
 // ===== SCREEN MANAGER =====
 class ScreenManager {
     /**
@@ -246,6 +359,7 @@ class ValentineApp {
             '.container',
             CONFIG.noButton
         );
+        this.photoGallery = new PhotoGalleryManager('#photo-gallery');
         
         this.init();
     }
@@ -278,6 +392,9 @@ class ValentineApp {
 
         // Create confetti
         this.confettiManager.create();
+
+        // Load random photos in gallery
+        this.photoGallery.loadRandomImages(6);
 
         // Optional: Play success sound (uncomment if you add audio file)
         // this.playSound('celebration.mp3');
