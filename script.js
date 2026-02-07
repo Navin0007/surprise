@@ -314,7 +314,51 @@ class MotionPagesManager {
     }
 
     /**
-     * Create a motion page with image and lyrics
+     * Create photo collage page with scrolling lyrics
+     */
+    createCollagePage(images, lyricText, index) {
+        const page = Utils.createElement('div', 'motion-page collage-page');
+        if (index === 0) {
+            page.classList.add('active');
+        }
+
+        // Create photo collage grid
+        const collageContainer = Utils.createElement('div', 'photo-collage');
+        
+        images.forEach((imagePath, imgIndex) => {
+            const collageItem = Utils.createElement('div', 'collage-item');
+            const img = Utils.createElement('img', 'collage-image', {
+                src: imagePath,
+                alt: `Photo ${imgIndex + 1}`,
+                loading: 'lazy'
+            });
+            const gradient = Utils.createElement('div', 'collage-gradient');
+            
+            collageItem.appendChild(img);
+            collageItem.appendChild(gradient);
+            collageContainer.appendChild(collageItem);
+        });
+
+        // Create scrolling lyrics container
+        const lyricsWrapper = Utils.createElement('div', 'lyrics-scroll-wrapper');
+        const lyricsContainer = Utils.createElement('div', 'lyrics-scroll');
+        lyricsContainer.textContent = lyricText;
+        
+        // Duplicate for seamless loop
+        const lyricsDuplicate = Utils.createElement('div', 'lyrics-scroll');
+        lyricsDuplicate.textContent = lyricText;
+        
+        lyricsWrapper.appendChild(lyricsContainer);
+        lyricsWrapper.appendChild(lyricsDuplicate);
+
+        page.appendChild(collageContainer);
+        page.appendChild(lyricsWrapper);
+
+        return page;
+    }
+
+    /**
+     * Create a motion page with image and lyrics (keeping for backward compatibility)
      */
     createMotionPage(imagePath, lyricText, index) {
         const page = Utils.createElement('div', 'motion-page');
@@ -370,27 +414,28 @@ class MotionPagesManager {
         const allImages = await this.getImageFiles();
         const shuffledImages = this.shuffleArray(allImages);
 
-        // Create pages - pair each lyric with a random image
+        // Create one collage page with multiple images and scrolling lyrics
         const numPages = Math.min(this.lyrics.length, 5); // Use up to 5 verses
         this.pages = [];
 
-        for (let i = 0; i < numPages; i++) {
-            const lyric = this.lyrics[i];
-            const image = shuffledImages[i % shuffledImages.length];
-            
-            const page = this.createMotionPage(image, lyric.text, i);
-            this.container.appendChild(page);
-            this.pages.push(page);
+        // Create collage page with 6-9 images
+        const collageImages = shuffledImages.slice(0, Math.min(9, shuffledImages.length));
+        
+        // Combine all lyrics into one scrolling text
+        const allLyrics = this.lyrics.slice(0, numPages).map(lyric => lyric.text).join('  •  ');
+        
+        const collagePage = this.createCollagePage(collageImages, allLyrics, 0);
+        this.container.appendChild(collagePage);
+        this.pages.push(collagePage);
+
+        // Hide page indicator for collage page
+        const pageIndicator = document.querySelector('.page-indicator');
+        if (pageIndicator) {
+            pageIndicator.style.display = 'none';
         }
 
-        // Update page indicator
-        const totalPagesEl = document.querySelector('#total-pages');
-        if (totalPagesEl) {
-            totalPagesEl.textContent = numPages;
-        }
-
-        // Start auto-play
-        this.startAutoPlay();
+        // Don't auto-play for single collage page
+        // this.startAutoPlay();
     }
 
     /**
