@@ -750,76 +750,65 @@ p {
 
 .photo-collage {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 8px;
     width: 100%;
     height: 75%;
     padding: 10px;
     box-sizing: border-box;
+    grid-auto-flow: dense;
 }
 
 .collage-item {
     position: relative;
-    border-radius: 15px;
+    border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
     animation: collageFloat 4s ease-in-out infinite;
+    transition: transform 0.3s ease;
 }
 
-.collage-item:nth-child(1) {
-    grid-column: 1 / 2;
-    grid-row: 1 / 2;
-    animation-delay: 0s;
+.collage-item:hover {
+    transform: scale(1.05);
+    z-index: 10;
+    box-shadow: 0 10px 30px rgba(255, 105, 180, 0.5);
 }
 
-.collage-item:nth-child(2) {
-    grid-column: 2 / 3;
-    grid-row: 1 / 2;
-    animation-delay: 0.2s;
+/* Different size classes */
+.collage-item.large {
+    grid-column: span 2;
+    grid-row: span 1;
 }
 
-.collage-item:nth-child(3) {
-    grid-column: 3 / 4;
-    grid-row: 1 / 2;
-    animation-delay: 0.4s;
+.collage-item.tall {
+    grid-column: span 1;
+    grid-row: span 2;
 }
 
-.collage-item:nth-child(4) {
-    grid-column: 1 / 2;
-    grid-row: 2 / 3;
-    animation-delay: 0.6s;
+.collage-item.wide {
+    grid-column: span 2;
+    grid-row: span 1;
 }
 
-.collage-item:nth-child(5) {
-    grid-column: 2 / 3;
-    grid-row: 2 / 3;
-    animation-delay: 0.8s;
+.collage-item.small {
+    grid-column: span 1;
+    grid-row: span 1;
 }
 
-.collage-item:nth-child(6) {
-    grid-column: 3 / 4;
-    grid-row: 2 / 3;
-    animation-delay: 1s;
-}
-
-.collage-item:nth-child(7) {
-    grid-column: 1 / 2;
-    grid-row: 3 / 4;
-    animation-delay: 1.2s;
-}
-
-.collage-item:nth-child(8) {
-    grid-column: 2 / 3;
-    grid-row: 3 / 4;
-    animation-delay: 1.4s;
-}
-
-.collage-item:nth-child(9) {
-    grid-column: 3 / 4;
-    grid-row: 3 / 4;
-    animation-delay: 1.6s;
-}
+/* Staggered animation delays */
+.collage-item:nth-child(1) { animation-delay: 0s; }
+.collage-item:nth-child(2) { animation-delay: 0.1s; }
+.collage-item:nth-child(3) { animation-delay: 0.2s; }
+.collage-item:nth-child(4) { animation-delay: 0.3s; }
+.collage-item:nth-child(5) { animation-delay: 0.4s; }
+.collage-item:nth-child(6) { animation-delay: 0.5s; }
+.collage-item:nth-child(7) { animation-delay: 0.6s; }
+.collage-item:nth-child(8) { animation-delay: 0.7s; }
+.collage-item:nth-child(9) { animation-delay: 0.8s; }
+.collage-item:nth-child(10) { animation-delay: 0.9s; }
+.collage-item:nth-child(11) { animation-delay: 1s; }
+.collage-item:nth-child(12) { animation-delay: 1.1s; }
 
 @keyframes collageFloat {
     0%, 100% {
@@ -835,6 +824,7 @@ p {
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: opacity 0.5s ease, transform 0.3s ease;
 }
 
 .collage-gradient {
@@ -868,17 +858,20 @@ p {
     display: flex;
     align-items: center;
     margin-top: 10px;
+    white-space: nowrap;
 }
 
 .lyrics-scroll {
     display: inline-block;
     white-space: nowrap;
-    font-size: 1.8em;
+    font-size: 1.6em;
     font-weight: 600;
     color: #8B4CBF;
     padding: 0 50px;
-    animation: scrollLeft 30s linear infinite;
+    animation: scrollLeft 60s linear infinite;
     text-shadow: 0 2px 10px rgba(139, 76, 191, 0.3);
+    line-height: 1.8;
+    letter-spacing: 1px;
 }
 
 .lyrics-scroll-wrapper:hover .lyrics-scroll {
@@ -890,61 +883,36 @@ p {
         transform: translateX(0);
     }
     100% {
-        transform: translateX(-50%);
+        transform: translateX(-33.333%);
     }
 }
 
 @media (max-width: 768px) {
     .photo-collage {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(4, 1fr);
-        gap: 8px;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(5, 1fr);
+        gap: 6px;
         padding: 8px;
     }
 
-    .collage-item:nth-child(1) {
-        grid-column: 1 / 2;
-        grid-row: 1 / 2;
+    .collage-item.large {
+        grid-column: span 2;
+        grid-row: span 1;
     }
 
-    .collage-item:nth-child(2) {
-        grid-column: 2 / 3;
-        grid-row: 1 / 2;
+    .collage-item.tall {
+        grid-column: span 1;
+        grid-row: span 2;
     }
 
-    .collage-item:nth-child(3) {
-        grid-column: 1 / 2;
-        grid-row: 2 / 3;
+    .collage-item.wide {
+        grid-column: span 3;
+        grid-row: span 1;
     }
 
-    .collage-item:nth-child(4) {
-        grid-column: 2 / 3;
-        grid-row: 2 / 3;
-    }
-
-    .collage-item:nth-child(5) {
-        grid-column: 1 / 2;
-        grid-row: 3 / 4;
-    }
-
-    .collage-item:nth-child(6) {
-        grid-column: 2 / 3;
-        grid-row: 3 / 4;
-    }
-
-    .collage-item:nth-child(7) {
-        grid-column: 1 / 2;
-        grid-row: 4 / 5;
-    }
-
-    .collage-item:nth-child(8) {
-        grid-column: 2 / 3;
-        grid-row: 4 / 5;
-    }
-
-    .collage-item:nth-child(9) {
-        grid-column: 1 / 3;
-        grid-row: 5 / 6;
+    .collage-item.small {
+        grid-column: span 1;
+        grid-row: span 1;
     }
 
     .lyrics-scroll {
