@@ -1,0 +1,27 @@
+{
+  "name": "valentine-surprise",
+  "version": "1.0.0",
+  "description": "An interactive Valentine's Day proposal web application with funny animations",
+  "main": "script.js",
+  "scripts": {
+    "start": "npx http-server -p 8080 -o",
+    "dev": "npx live-server --port=8080",
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "keywords": [
+    "valentine",
+    "proposal",
+    "interactive",
+    "romantic",
+    "javascript",
+    "web-app"
+  ],
+  "author": "Navin",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Navin0007/surprise.git"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}

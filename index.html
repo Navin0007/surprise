@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💕 Be My Valentine? 💕</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Background hearts container -->
+    <div id="hearts-container"></div>
+
+    <!-- Main container -->
+    <div class="container">
+        <!-- Question screen -->
+        <div id="question" class="screen active">
+            <div class="emoji" id="main-emoji">💝</div>
+            <h1 id="main-title">Will You Be My Valentine?</h1>
+            <p id="main-message">
+                I've been thinking about this for a while... and I can't imagine 
+                celebrating Valentine's Day without you! 💕
+            </p>
+            
+            <div class="buttons">
+                <button id="yesBtn" class="btn btn-yes">Yes! 💕</button>
+                <button id="noBtn" class="btn btn-no">No 😢</button>
+            </div>
+        </div>
+
+        <!-- Celebration screen -->
+        <div id="celebration" class="screen celebration">
+            <div class="emoji celebration-emoji">🎉</div>
+            <h2 class="celebration-title">Yay! You said YES! 💕</h2>
+            <div class="gif-container">
+                <img src="https://media.giphy.com/media/LSQjPniAHL31zPrXB0/giphy.gif" 
+                     alt="Love celebration"
+                     loading="lazy">
+            </div>
+            <p class="love-message">
+                You just made me the happiest person alive! 
+                Can't wait to spend Valentine's Day with you! 💖✨
+            </p>
+            <div class="emoji celebration-emoji-bottom">😍</div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js" type="module"></script>
+</body>
+</html>
