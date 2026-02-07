@@ -18,20 +18,21 @@ const CONFIG = {
     },
     noButton: {
         phrases: [
-            'No 😢',
-            'Are you sure? 🥺',
-            'Really? 💔',
-            'Think again! 😿',
-            'Please? 🙏',
-            "Don't break my heart! 💔",
-            'Give me a chance! 😭',
-            'You sure about that? 🥹',
-            'But why? 😢',
-            'Reconsider? 💕',
-            'One more chance? 🥺',
-            'Pretty please? 🙏✨'
+            '💔 No 💔',
+            '💔 Are you sure? 💔',
+            '💔 Really? 💔',
+            '💔 Think again! 💔',
+            '💕 Please? 💕',
+            "💔 Don't break my heart! 💔",
+            '💕 Give me a chance! 💕',
+            '💔 You sure about that? 💔',
+            '💔 But why? 💔',
+            '💕 Reconsider? 💕',
+            '💕 One more chance? 💕',
+            '💕 Pretty please? 💕'
         ],
-        growthRate: 0.1
+        growthRate: 0.1,
+        maxClicks: 5
     }
 };
 
@@ -130,8 +131,16 @@ class NoButtonController {
         this.config = config;
         this.clickCount = 0;
         this.yesButton = document.querySelector('#yesBtn');
+        this.app = null; // Will be set by ValentineApp
         
         this.init();
+    }
+
+    /**
+     * Set reference to main app for triggering yes action
+     */
+    setApp(app) {
+        this.app = app;
     }
 
     /**
@@ -143,8 +152,14 @@ class NoButtonController {
         this.button.addEventListener('mouseover', () => this.moveButton());
         this.button.addEventListener('click', (e) => {
             e.preventDefault();
+            this.clickCount++;
             this.moveButton();
             this.growYesButton();
+            
+            // After max clicks, automatically trigger yes
+            if (this.clickCount >= this.config.maxClicks) {
+                this.fallBackToYes();
+            }
         });
     }
 
@@ -172,9 +187,30 @@ class NoButtonController {
     growYesButton() {
         if (!this.yesButton) return;
         
-        this.clickCount++;
         const scale = 1 + (this.clickCount * this.config.growthRate);
         this.yesButton.style.transform = `scale(${scale})`;
+    }
+
+    /**
+     * Fall back to yes button - automatically trigger yes action
+     */
+    fallBackToYes() {
+        // Hide no button
+        if (this.button) {
+            this.button.style.display = 'none';
+        }
+        
+        // Show message and trigger yes after a short delay
+        if (this.yesButton) {
+            this.yesButton.textContent = '💕 You chose YES! 💕';
+            this.yesButton.style.animation = 'pulse 0.5s ease 3';
+            
+            setTimeout(() => {
+                if (this.app) {
+                    this.app.handleYesClick();
+                }
+            }, 1500);
+        }
     }
 }
 
@@ -220,6 +256,9 @@ class ValentineApp {
     init() {
         // Create background hearts
         this.backgroundHearts.create();
+
+        // Set reference to app in noButtonController
+        this.noButtonController.setApp(this);
 
         // Set up Yes button
         const yesButton = document.querySelector('#yesBtn');
